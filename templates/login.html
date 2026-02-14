@@ -13,13 +13,13 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{.basePath}}/static/plugins/fontawesome-free/css/all.min.css">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="{{.basePath}}/static/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{.basePath}}/static/dist/css/adminlte.min.css">
-    <!-- Google Font: Source Sans Pro -->
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <style id="wgui-system-font">
+      body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif; }
+    </style>
 </head>
 
 <body class="hold-transition login-page">
@@ -30,10 +30,10 @@
         <!-- /.login-logo -->
         <div class="card">
             <div class="card-body login-card-body">
-                <p class="login-box-msg">Sign in to start your session</p>
+                <p class="login-box-msg">Войдите, чтобы продолжить</p>
                 <form action="" method="post">
                     <div class="input-group mb-3">
-                        <input id="username" type="text" class="form-control" placeholder="Username">
+                        <input id="username" type="text" class="form-control" placeholder="Логин">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input id="password" type="password" class="form-control" placeholder="Password">
+                        <input id="password" type="password" class="form-control" placeholder="Пароль">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -53,13 +53,13 @@
                             <div class="icheck-primary">
                                 <input type="checkbox" id="remember">
                                 <label for="remember">
-                                    Remember Me
+                                    Запомнить меня
                                 </label>
                             </div>
                         </div>
                         <!-- /.col -->
                         <div class="col-4">
-                            <button id="btn_login" type="submit" class="btn btn-primary btn-block">Sign In</button>
+                            <button id="btn_login" type="submit" class="btn btn-primary btn-block">Войти</button>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -87,7 +87,7 @@
         if (nextURL && /(?:^\/[a-zA-Z_])|(?:^\/$)/.test(nextURL.trim())) {
             window.location.href = nextURL;
         } else {
-            window.location.href = '/{{.basePath}}';
+            window.location.href = '{{.basePath}}/status';
         } 
     }
 </script>

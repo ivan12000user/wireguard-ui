@@ -1,75 +1,221 @@
 {{define "title"}}
-Connected Peers
+Статус
 {{end}}
 
 {{define "top_css"}}
+<style>
+  .wgui-status-controls { gap: .5rem; }
+  .wgui-status-table td, .wgui-status-table th { vertical-align: middle; }
+  .wgui-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  .wgui-wrap { white-space: normal; word-break: break-word; overflow-wrap: anywhere; }
+</style>
 {{end}}
 
-{{define "username"}}
-{{ .username }}
-{{end}}
-
-{{define "page_title"}}
-Connected Peers
-{{end}}
+{{define "username"}}{{ .username }}{{end}}
+{{define "page_title"}}Статус{{end}}
 
 {{define "page_content"}}
-<script>
-  function bytesToHumanReadable(temporal) {
-    const units = [" ", " K", " M", " G", " T", " P", " E", " Z", " Y"]
-    let pow = 0
-
-    while (temporal > 1024) {
-      temporal /= 1024
-      pow ++
-      if (pow == units.length-1) break
-    }
-
-    return parseFloat(temporal.toFixed(2)) + units[pow]+"B"
-  }
-</script>
 <section class="content">
-    <div class="container-fluid">
-        {{ if .error }}
-        <div class="alert alert-warning" role="alert">{{.error}}</div>
-        {{ end}}
-        {{ range $dev := .devices }}
-            <table class="table table-sm">
-                <caption>List of connected peers for device with name {{ $dev.Name }} </caption>
-              <thead>
+  <div class="container-fluid">
+    {{ if .error }}<div class="alert alert-warning" role="alert">{{.error}}</div>{{ end}}
+
+    <div class="d-flex flex-wrap align-items-center mb-2 wgui-status-controls">
+      <div class="small text-muted mr-2">Обновлено: <span id="status-last-update">—</span></div>
+
+      <div class="custom-control custom-switch mr-2">
+        <input type="checkbox" class="custom-control-input" id="status-auto">
+        <label class="custom-control-label" for="status-auto">Авто</label>
+      </div>
+
+      <select id="status-interval" class="custom-select custom-select-sm mr-2" aria-label="Интервал обновления">
+        <option value="5">5 сек</option>
+        <option value="10" selected>10 сек</option>
+        <option value="30">30 сек</option>
+        <option value="60">60 сек</option>
+      </select>
+
+      <button class="btn btn-outline-secondary btn-sm" id="status-refresh-btn" type="button">
+        <i class="fas fa-sync"></i> Обновить
+      </button>
+
+      <div class="small text-muted ml-auto" id="status-error" style="display:none;"></div>
+    </div>
+
+    {{ range $dev := .devices }}
+      <div class="card card-outline card-secondary mb-3">
+        <div class="card-header py-2">
+          <h3 class="card-title mb-0">Устройство: <span class="wgui-mono">{{ $dev.Name }}</span></h3>
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0 wgui-status-table" data-device="{{ $dev.Name }}">
+              <thead class="thead-light">
                 <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Allocated IPs</th>
-                  <th scope="col">Endpoint</th>
-                  <th scope="col">Public Key</th>
-                  <th scope="col">Received</th>
-                  <th scope="col">Transmitted</th>
-                  <th scope="col">Connected (Approximation)</th>
-                  <th scope="col">Last Handshake</th>
+                  <th scope="col">Пир / IP</th>
+                  <th scope="col" class="d-none d-sm-table-cell">Endpoint</th>
+                  <th scope="col" class="d-none d-md-table-cell text-right">RX</th>
+                  <th scope="col" class="d-none d-md-table-cell text-right">TX</th>
+                  <th scope="col">Последний handshake</th>
                 </tr>
               </thead>
-              <tbody>
-              {{ range $idx, $peer := $dev.Peers }}
-              <tr {{ if $peer.Connected }} class="table-success" {{ end }}>
-                <th scope="row">{{ $idx }}</th>
-                <td>{{ $peer.Name }}</td>
-                <td>{{ $peer.Email }}</td>
-                <td>{{ $peer.AllocatedIP }}</td>
-                <td>{{ $peer.Endpoint }}</td>
-                <td>{{ $peer.PublicKey }}</td>
-                <td title="{{ $peer.ReceivedBytes }} Bytes"><script>document.write(bytesToHumanReadable({{ $peer.ReceivedBytes }}))</script></td>
-                <td title="{{ $peer.TransmitBytes }} Bytes"><script>document.write(bytesToHumanReadable({{ $peer.TransmitBytes }}))</script></td>
-                <td>{{ if $peer.Connected }}✓{{end}}</td>
-                <td>{{ $peer.LastHandshakeTime.Format "2006-01-02 15:04:05 MST" }}</td>
-               </tr>
-              {{ end }}
+
+              <tbody id="peersBody-{{ $dev.Name }}">
+                {{ range $idx, $peer := $dev.Peers }}
+                <tr {{ if $peer.Connected }} class="table-success" {{ end }}>
+                  <td>
+                    <div><b>{{ $peer.Name }}</b></div>
+                    <div class="text-muted small wgui-mono wgui-wrap">{{ $peer.AllocatedIP }}</div>
+                    <div class="d-block d-sm-none text-muted small wgui-mono wgui-wrap">
+                      {{ if $peer.Endpoint }}Endpoint: {{ $peer.Endpoint }}{{ end }}
+                    </div>
+                  </td>
+
+                  <td class="d-none d-sm-table-cell wgui-mono wgui-wrap">{{ $peer.Endpoint }}</td>
+
+                  <td class="d-none d-md-table-cell text-right bytes" data-bytes="{{ $peer.ReceivedBytes }}" title="{{ $peer.ReceivedBytes }} Bytes">{{ $peer.ReceivedBytes }}</td>
+                  <td class="d-none d-md-table-cell text-right bytes" data-bytes="{{ $peer.TransmitBytes }}" title="{{ $peer.TransmitBytes }} Bytes">{{ $peer.TransmitBytes }}</td>
+
+                  <td class="handshake" data-ts="{{ $peer.LastHandshakeTime.Unix }}" title="{{ $peer.LastHandshakeTime.Format "2006-01-02 15:04:05 MST" }}">
+                    {{ $peer.LastHandshakeTime.Format "2006-01-02 15:04:05 MST" }}
+                  </td>
+                </tr>
+                {{ end }}
               </tbody>
             </table>
-        {{ end }}
-    </div>
+          </div>
+        </div>
+      </div>
+    {{ end }}
+  </div>
 </section>
 {{end}}
+
 {{define "bottom_js"}}
+<script>
+(function() {
+  const basePath = "{{.basePath}}";
+  const statusUrl = basePath + "/status.json";
+
+  const $auto = document.getElementById("status-auto");
+  const $interval = document.getElementById("status-interval");
+  const $btn = document.getElementById("status-refresh-btn");
+  const $last = document.getElementById("status-last-update");
+  const $err = document.getElementById("status-error");
+
+  function bytesToHumanReadable(bytes) {
+    const units = ["Б","КБ","МБ","ГБ","ТБ","ПБ","ЭБ","ЗБ","ЙБ"];
+    let n = Number(bytes || 0);
+    let i = 0;
+    while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
+    const val = (i === 0) ? String(Math.round(n)) : n.toFixed(2);
+    return val + " " + units[i];
+  }
+
+  function relTimeRuFromUnix(ts) {
+    const t = Number(ts || 0);
+    if (!t || t <= 0) return "—";
+    const sec = Math.max(0, Math.floor(Date.now()/1000 - t));
+    if (sec < 60) return sec + " сек назад";
+    const min = Math.floor(sec/60);
+    if (min < 60) return min + " мин назад";
+    const hr = Math.floor(min/60);
+    if (hr < 48) return hr + " ч назад";
+    const day = Math.floor(hr/24);
+    return day + " дн назад";
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function setError(msg) {
+    if (!msg) { $err.style.display = "none"; $err.textContent = ""; return; }
+    $err.style.display = "block";
+    $err.textContent = msg;
+  }
+
+  function formatExisting() {
+    document.querySelectorAll(".bytes[data-bytes]").forEach(td => {
+      td.textContent = bytesToHumanReadable(td.getAttribute("data-bytes"));
+    });
+    document.querySelectorAll(".handshake[data-ts]").forEach(td => {
+      td.textContent = relTimeRuFromUnix(td.getAttribute("data-ts"));
+    });
+  }
+
+  function render(data) {
+    if (!data || !data.devices) return;
+
+    for (const dev of data.devices) {
+      const tbody = document.getElementById("peersBody-" + dev.name);
+      if (!tbody) continue;
+
+      const rows = [];
+      for (const p of (dev.peers || [])) {
+        const trClass = p.connected ? ' class="table-success"' : "";
+        const allocatedHtml = (p.allocated_ips || []).map(escapeHtml).join("<br>");
+        const endpoint = escapeHtml(p.endpoint || "");
+        rows.push(
+          `<tr${trClass}>` +
+            `<td>` +
+              `<div><b>${escapeHtml(p.name || "")}</b></div>` +
+              `<div class="text-muted small wgui-mono wgui-wrap">${allocatedHtml}</div>` +
+              `<div class="d-block d-sm-none text-muted small wgui-mono wgui-wrap">${endpoint ? "Endpoint: " + endpoint : ""}</div>` +
+            `</td>` +
+            `<td class="d-none d-sm-table-cell wgui-mono wgui-wrap">${endpoint}</td>` +
+            `<td class="d-none d-md-table-cell text-right" title="${p.received_bytes} Bytes">${bytesToHumanReadable(p.received_bytes)}</td>` +
+            `<td class="d-none d-md-table-cell text-right" title="${p.transmit_bytes} Bytes">${bytesToHumanReadable(p.transmit_bytes)}</td>` +
+            `<td title="${escapeHtml(p.last_handshake || "")}">${relTimeRuFromUnix(p.last_handshake_unix)}</td>` +
+          `</tr>`
+        );
+      }
+
+      tbody.innerHTML = rows.join("");
+    }
+
+    $last.textContent = data.server_time || new Date().toISOString();
+    setError(data.error || "");
+  }
+
+  async function refresh() {
+    try {
+      setError("");
+      const r = await fetch(statusUrl, { cache: "no-store", credentials: "same-origin" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      render(await r.json());
+    } catch (e) {
+      setError("Ошибка обновления: " + (e?.message || e));
+    }
+  }
+
+  let timer = null;
+  function applyTimer() {
+    if (timer) { clearInterval(timer); timer = null; }
+    if (!$auto.checked) return;
+    const sec = Number($interval.value || 10);
+    timer = setInterval(refresh, Math.max(3, sec) * 1000);
+  }
+
+  const autoSaved = localStorage.getItem("wgui_status_auto");
+  const intervalSaved = localStorage.getItem("wgui_status_interval");
+  $auto.checked = (autoSaved === null) ? true : (autoSaved === "1");
+  if (intervalSaved) $interval.value = intervalSaved;
+
+  $auto.addEventListener("change", () => {
+    localStorage.setItem("wgui_status_auto", $auto.checked ? "1" : "0");
+    applyTimer();
+  });
+  $interval.addEventListener("change", () => {
+    localStorage.setItem("wgui_status_interval", String($interval.value));
+    applyTimer();
+  });
+  $btn.addEventListener("click", refresh);
+
+  formatExisting();
+  $last.textContent = new Date().toISOString();
+  applyTimer();
+  setTimeout(refresh, 300);
+})();
+</script>
 {{end}}

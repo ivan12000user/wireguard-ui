@@ -46,7 +46,7 @@ function renderClientList(data) {
                             </div>
                             <div class="info-box-content">
                                 <div class="btn-group">
-                                    <a href="download?clientid=${obj.Client.id}" class="btn btn-outline-primary btn-sm">Download</a>
+                                    <a href="${window.WGUI_BASE_PATH}/download?clientid=${obj.Client.id}" class="btn btn-outline-primary btn-sm">Download</a>
                                 </div>
                                 <div class="btn-group">      
                                     <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"

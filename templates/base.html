@@ -22,11 +22,11 @@
     <!-- Jquery Tags Input -->
     <link rel="stylesheet" href="{{.basePath}}/static/plugins/jquery-tags-input/dist/jquery.tagsinput.min.css">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{.basePath}}/static/dist/css/adminlte.min.css">
-    <!-- Google Font: Source Sans Pro -->
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <style id="wgui-system-font">
+      body, .content-wrapper { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif; }
+    </style>
 
     <!-- START: On page css -->
     {{template "top_css" .}}
@@ -88,7 +88,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="{{.basePath}}" class="brand-link">
+            <a href="{{.basePath}}/status" class="brand-link">
                 <span class="brand-text">&nbsp; WIREGUARD UI</span>
             </a>
 
@@ -103,9 +103,9 @@
                         {{if .baseData.CurrentUser}}
 
                         {{if .baseData.Admin}}
-                        <a href="{{.basePath}}/profile" class="d-block">Administrator: {{.baseData.CurrentUser}}</a>
+                        <a href="{{.basePath}}/profile" class="d-block">Администратор: {{.baseData.CurrentUser}}</a>
                         {{else}}
-                        <a href="{{.basePath}}/profile" class="d-block">Manager: {{.baseData.CurrentUser}}</a>
+                        <a href="{{.basePath}}/profile" class="d-block">Менеджер: {{.baseData.CurrentUser}}</a>
                         {{end}}
 
                         {{else}}
@@ -117,13 +117,17 @@
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-header">MAIN</li>
+                        <li class="nav-header">ОСНОВНОЕ</li>
                         <li class="nav-item">
-                            <a href="{{.basePath}}/" class="nav-link {{if eq .baseData.Active ""}}active{{end}}">
+                            <a href="{{.basePath}}/status" class="nav-link {{if eq .baseData.Active "status" }}active{{end}}">
+                                <i class="nav-icon fas fa-signal"></i>
+                                <p>Статус</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{.basePath}}/clients" class="nav-link {{if eq .baseData.Active ""}}active{{end}}">
                                 <i class="nav-icon fas fa-user-secret"></i>
-                                <p>
-                                    Wireguard Clients
-                                </p>
+                                <p>Клиенты WireGuard</p>
                             </a>
                         </li>
 
@@ -131,58 +135,32 @@
                         <li class="nav-item">
                             <a href="{{.basePath}}/wg-server" class="nav-link {{if eq .baseData.Active "wg-server" }}active{{end}}">
                                 <i class="nav-icon fas fa-server"></i>
-                                <p>
-                                    Wireguard Server
-                                </p>
+                                <p>Сервер WireGuard</p>
                             </a>
                         </li>
 
-
-                        <li class="nav-header">SETTINGS</li>
+                        <li class="nav-header">НАСТРОЙКИ</li>
                         <li class="nav-item">
                             <a href="{{.basePath}}/global-settings" class="nav-link {{if eq .baseData.Active "global-settings" }}active{{end}}">
                                 <i class="nav-icon fas fa-cog"></i>
-                                <p>
-                                    Global Settings
-                                </p>
+                                <p>Глобальные настройки</p>
                             </a>
                         </li>
                         {{if not .loginDisabled}}
                         <li class="nav-item">
                             <a href="{{.basePath}}/users-settings" class="nav-link {{if eq .baseData.Active "users-settings" }}active{{end}}">
-                            <i class="nav-icon fas fa-cog"></i>
-                            <p>
-                                Users Settings
-                            </p>
+                                <i class="nav-icon fas fa-users-cog"></i>
+                                <p>Пользователи</p>
                             </a>
                         </li>
                         {{end}}
                         {{end}}
 
-                        <li class="nav-header">UTILITIES</li>
-                        <li class="nav-item">
-                            <a href="{{.basePath}}/status" class="nav-link {{if eq .baseData.Active "status" }}active{{end}}">
-                                <i class="nav-icon fas fa-signal"></i>
-                                <p>
-                                    Status
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{.basePath}}/wake_on_lan_hosts" class="nav-link {{if eq .baseData.Active "wake_on_lan_hosts" }}active{{end}}">
-                                <i class="nav-icon fas  fa-solid fa-power-off"></i>
-                                <p>
-                                    WoL Hosts
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-header">ABOUT</li>
+                        <li class="nav-header">О ПРОГРАММЕ</li>
                         <li class="nav-item">
                             <a href="{{.basePath}}/about" class="nav-link {{if eq .baseData.Active "about" }}active{{end}}">
-                            <i class="nav-icon fas  fa-solid fa-id-card"></i>
-                            <p>
-                                About
-                            </p>
+                                <i class="nav-icon fas fa-id-card"></i>
+                                <p>О программе</p>
                             </a>
                         </li>
                     </ul>
@@ -375,6 +353,7 @@
     <!-- AdminLTE App -->
     <script src="{{.basePath}}/static/dist/js/adminlte.min.js"></script>
     <!-- Custom js -->
+    <script>window.WGUI_BASE_PATH = "{{.basePath}}";</script>
     <script src="{{.basePath}}/static/custom/js/helper.js"></script>
     <script>
         // initialize all tooltips
@@ -397,7 +376,7 @@
 
             updateApplyConfigVisibility()
             // from clients.html
-            updateSearchList()
+            if (typeof updateSearchList === 'function') { updateSearchList(); }
 
         });
 
