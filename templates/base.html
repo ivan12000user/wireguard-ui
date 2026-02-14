@@ -355,6 +355,55 @@
     <!-- Custom js -->
     <script>window.WGUI_BASE_PATH = "{{.basePath}}";</script>
     <script src="{{.basePath}}/static/custom/js/helper.js"></script>
+<script>
+(function () {
+  const KEY = "wgui_theme"; // "dark" | "light"
+
+  function isDark() {
+    try { return (localStorage.getItem(KEY) || "light") === "dark"; } catch(e) { return false; }
+  }
+
+  function setMode(mode) {
+    try { localStorage.setItem(KEY, mode); } catch(e) {}
+    applyMode();
+  }
+
+  function applyMode() {
+    const dark = isDark();
+    document.body.classList.toggle("dark-mode", dark);
+
+    // Опционально подкрасим navbar (если он светлый по умолчанию)
+    const nav = document.querySelector(".main-header.navbar");
+    if (nav) {
+      nav.classList.toggle("navbar-dark", dark);
+      nav.classList.toggle("navbar-gray-dark", dark);
+      nav.classList.toggle("navbar-light", !dark);
+      nav.classList.toggle("navbar-white", !dark);
+    }
+
+    const ico = document.getElementById("wgui-theme-icon");
+    if (ico) ico.textContent = dark ? "☀️" : "🌙";
+  }
+
+  function init() {
+    applyMode();
+    const a = document.getElementById("wgui-theme-toggle");
+    if (a) {
+      a.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        setMode(isDark() ? "light" : "dark");
+      });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+
     <script>
         // initialize all tooltips
         $(function () {
