@@ -135,3 +135,83 @@ function prettyDateTime(timeStr) {
     const dateLocal = new Date(dt.getTime() - offsetMs);
     return dateLocal.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " ");
 }
+
+// WGUI_THEME_TOGGLE_V2
+(function () {
+  const KEY = "wgui_theme"; // dark|light
+
+  function getMode(){ try{return localStorage.getItem(KEY)||"light"}catch(e){return"light"} }
+  function isDark(){ return getMode()==="dark"; }
+  function setMode(m){ try{localStorage.setItem(KEY,m)}catch(e){} apply(); }
+  function toggle(){ setMode(isDark()?"light":"dark"); }
+
+  function ensureStyle(){
+    if (document.getElementById("wgui-theme-style")) return;
+    const st=document.createElement("style");
+    st.id="wgui-theme-style";
+    st.textContent=`
+      #wgui-theme-fab{
+        position:fixed; right:14px; bottom:14px; z-index:1060;
+        border:0; border-radius:999px; padding:10px 12px;
+        box-shadow:0 6px 18px rgba(0,0,0,.25);
+        cursor:pointer; background:rgba(120,120,120,.85); color:#fff;
+        backdrop-filter: blur(6px);
+      }
+      body.dark-mode #wgui-theme-fab{ background:rgba(40,40,40,.85); }
+    `;
+    document.head.appendChild(st);
+  }
+
+  function ensureButtons(){
+    ensureStyle();
+
+    // navbar справа (если есть)
+    const nav=document.querySelector(".main-header.navbar");
+    if(nav && !document.getElementById("wgui-theme-toggle")){
+      const slot = nav.querySelector(".navbar-nav.ml-auto") || nav.querySelector(".navbar-nav");
+      if(slot){
+        const li=document.createElement("li");
+        li.className="nav-item";
+        li.innerHTML =
+          '<a class="nav-link" href="#" id="wgui-theme-toggle" title="Тема" aria-label="Переключить тему">' +
+          '<i id="wgui-theme-icon" class="fas fa-moon"></i>' +
+          '</a>';
+        if(slot.classList.contains("ml-auto")) slot.prepend(li); else slot.appendChild(li);
+        li.querySelector("#wgui-theme-toggle").addEventListener("click", function(ev){ ev.preventDefault(); toggle(); });
+      }
+    }
+
+    // fallback: плавающая кнопка
+    if(!document.getElementById("wgui-theme-toggle") && !document.getElementById("wgui-theme-fab")){
+      const b=document.createElement("button");
+      b.id="wgui-theme-fab";
+      b.type="button";
+      b.setAttribute("aria-label","Переключить тему");
+      b.innerHTML='<i id="wgui-theme-fab-icon" class="fas fa-moon"></i>';
+      b.addEventListener("click", toggle);
+      document.body.appendChild(b);
+    }
+  }
+
+  function apply(){
+    const dark=isDark();
+    document.body.classList.toggle("dark-mode", dark);
+
+    const nav=document.querySelector(".main-header.navbar");
+    if(nav){
+      nav.classList.toggle("navbar-dark", dark);
+      nav.classList.toggle("navbar-gray-dark", dark);
+      nav.classList.toggle("navbar-light", !dark);
+      nav.classList.toggle("navbar-white", !dark);
+    }
+
+    const i1=document.getElementById("wgui-theme-icon");
+    if(i1){ i1.classList.toggle("fa-moon", !dark); i1.classList.toggle("fa-sun", dark); }
+    const i2=document.getElementById("wgui-theme-fab-icon");
+    if(i2){ i2.classList.toggle("fa-moon", !dark); i2.classList.toggle("fa-sun", dark); }
+  }
+
+  function init(){ ensureButtons(); apply(); }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
