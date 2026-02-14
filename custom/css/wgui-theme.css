@@ -1,0 +1,49 @@
+/* WGUI_THEME_CSS_V4 */
+
+/* гарантированная тёмная тема */
+html.dark-mode, body.dark-mode { background:#0f1115 !important; color:#e6e6e6 !important; }
+body.dark-mode .content-wrapper { background:#0f1115 !important; }
+body.dark-mode .wrapper { background:#0f1115 !important; }
+
+body.dark-mode .main-sidebar { background:#141822 !important; }
+body.dark-mode .brand-link { background:#141822 !important; color:#e6e6e6 !important; }
+
+body.dark-mode .card { background:#151a24 !important; color:#e6e6e6 !important; }
+body.dark-mode .card-header { background:#151a24 !important; border-bottom:1px solid rgba(255,255,255,.08) !important; }
+body.dark-mode .card-footer { background:#151a24 !important; border-top:1px solid rgba(255,255,255,.08) !important; }
+
+body.dark-mode .table { color:#e6e6e6 !important; }
+body.dark-mode .table td, body.dark-mode .table th { border-top:1px solid rgba(255,255,255,.08) !important; }
+body.dark-mode .table thead th { border-bottom:1px solid rgba(255,255,255,.12) !important; }
+body.dark-mode .table-hover tbody tr:hover { background:rgba(255,255,255,.04) !important; }
+body.dark-mode .table-striped tbody tr:nth-of-type(odd) { background:rgba(255,255,255,.02) !important; }
+
+body.dark-mode .form-control,
+body.dark-mode .custom-select,
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background:#0f1115 !important; color:#e6e6e6 !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+}
+body.dark-mode .form-control:focus {
+  border-color: rgba(255,255,255,.25) !important;
+  box-shadow: 0 0 0 .2rem rgba(255,255,255,.06) !important;
+}
+
+body.dark-mode .dropdown-menu { background:#151a24 !important; color:#e6e6e6 !important; border:1px solid rgba(255,255,255,.10) !important; }
+body.dark-mode .dropdown-item { color:#e6e6e6 !important; }
+body.dark-mode .dropdown-item:hover { background:rgba(255,255,255,.05) !important; }
+
+body.dark-mode .modal-content { background:#151a24 !important; color:#e6e6e6 !important; }
+body.dark-mode a { color:#9ecbff !important; }
+
+/* кнопка fallback снизу */
+#wgui-theme-fab{
+  position:fixed; right:14px; bottom:14px; z-index:1060;
+  border:0; border-radius:999px; padding:10px 12px;
+  box-shadow:0 6px 18px rgba(0,0,0,.25);
+  cursor:pointer; background:rgba(120,120,120,.85); color:#fff;
+  backdrop-filter: blur(6px);
+}
+body.dark-mode #wgui-theme-fab{ background:rgba(40,40,40,.85) !important; }

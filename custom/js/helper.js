@@ -136,7 +136,7 @@ function prettyDateTime(timeStr) {
     return dateLocal.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " ");
 }
 
-// WGUI_THEME_TOGGLE_V3
+// WGUI_THEME_TOGGLE_V4
 (function () {
   const KEY = "wgui_theme"; // dark|light
 
@@ -145,65 +145,17 @@ function prettyDateTime(timeStr) {
   function setMode(m){ try { localStorage.setItem(KEY, m); } catch(e) {} apply(); }
   function toggle(){ setMode(isDark() ? "light" : "dark"); }
 
-  function ensureStyle(){
-    if (document.getElementById("wgui-theme-style")) return;
-
-    const st = document.createElement("style");
-    st.id = "wgui-theme-style";
-    st.textContent = `
-      /* кнопка темы (fallback) */
-      #wgui-theme-fab{
-        position:fixed; right:14px; bottom:14px; z-index:1060;
-        border:0; border-radius:999px; padding:10px 12px;
-        box-shadow:0 6px 18px rgba(0,0,0,.25);
-        cursor:pointer; background:rgba(120,120,120,.85); color:#fff;
-        backdrop-filter: blur(6px);
-      }
-      body.dark-mode #wgui-theme-fab{ background:rgba(40,40,40,.85); }
-
-      /* ГАРАНТИРОВАННАЯ тёмная тема (даже если AdminLTE dark-mode слабый) */
-      body.dark-mode { background:#0f1115; color:#e6e6e6; }
-      body.dark-mode .content-wrapper { background:#0f1115; }
-      body.dark-mode .main-sidebar { background:#141822 !important; }
-      body.dark-mode .brand-link { background:#141822 !important; color:#e6e6e6 !important; }
-
-      body.dark-mode .card { background:#151a24; color:#e6e6e6; }
-      body.dark-mode .card-header { background:#151a24; border-bottom:1px solid rgba(255,255,255,.08); }
-      body.dark-mode .card-footer { background:#151a24; border-top:1px solid rgba(255,255,255,.08); }
-
-      body.dark-mode .table { color:#e6e6e6; }
-      body.dark-mode .table thead th { border-bottom:1px solid rgba(255,255,255,.12); }
-      body.dark-mode .table td, body.dark-mode .table th { border-top:1px solid rgba(255,255,255,.08); }
-      body.dark-mode .table-hover tbody tr:hover { background:rgba(255,255,255,.04); }
-      body.dark-mode .table-striped tbody tr:nth-of-type(odd) { background:rgba(255,255,255,.02); }
-
-      body.dark-mode .form-control,
-      body.dark-mode .custom-select,
-      body.dark-mode input,
-      body.dark-mode select,
-      body.dark-mode textarea {
-        background:#0f1115; color:#e6e6e6; border:1px solid rgba(255,255,255,.14);
-      }
-      body.dark-mode .form-control:focus {
-        border-color: rgba(255,255,255,.25);
-        box-shadow: 0 0 0 .2rem rgba(255,255,255,.06);
-      }
-
-      body.dark-mode a { color:#9ecbff; }
-      body.dark-mode .navbar { border-bottom:1px solid rgba(255,255,255,.08); }
-
-      body.dark-mode .modal-content { background:#151a24; color:#e6e6e6; }
-      body.dark-mode .dropdown-menu { background:#151a24; color:#e6e6e6; border:1px solid rgba(255,255,255,.10); }
-      body.dark-mode .dropdown-item { color:#e6e6e6; }
-      body.dark-mode .dropdown-item:hover { background:rgba(255,255,255,.05); }
-    `;
-    document.head.appendChild(st);
+  function ensureCssLink(){
+    if (document.getElementById("wgui-theme-css")) return;
+    const link = document.createElement("link");
+    link.id = "wgui-theme-css";
+    link.rel = "stylesheet";
+    link.href = "/static/custom/css/wgui-theme.css";
+    document.head.appendChild(link);
   }
 
   function ensureButtons(){
-    ensureStyle();
-
-    // 1) navbar справа
+    // navbar
     const nav = document.querySelector(".main-header.navbar");
     if (nav && !document.getElementById("wgui-theme-toggle")) {
       const slot = nav.querySelector(".navbar-nav.ml-auto") || nav.querySelector(".navbar-nav");
@@ -216,38 +168,54 @@ function prettyDateTime(timeStr) {
           "</a>";
         if (slot.classList.contains("ml-auto")) slot.prepend(li);
         else slot.appendChild(li);
-
-        li.querySelector("#wgui-theme-toggle").addEventListener("click", function(ev){
-          ev.preventDefault();
-          toggle();
-        });
       }
     }
-
-    // 2) fallback: плавающая кнопка
+    // fallback floating
     if (!document.getElementById("wgui-theme-toggle") && !document.getElementById("wgui-theme-fab")) {
       const b = document.createElement("button");
       b.id = "wgui-theme-fab";
       b.type = "button";
       b.setAttribute("aria-label", "Переключить тему");
       b.innerHTML = '<span id="wgui-theme-fab-emoji" style="font-size:18px">🌙</span>';
-      b.addEventListener("click", toggle);
       document.body.appendChild(b);
     }
   }
 
   function apply(){
+    ensureCssLink();
     const dark = isDark();
+    document.documentElement.classList.toggle("dark-mode", dark);
     document.body.classList.toggle("dark-mode", dark);
 
-    // обновим emoji
     const e1 = document.getElementById("wgui-theme-emoji");
     if (e1) e1.textContent = dark ? "☀️" : "🌙";
     const e2 = document.getElementById("wgui-theme-fab-emoji");
     if (e2) e2.textContent = dark ? "☀️" : "🌙";
   }
 
-  function init(){ ensureButtons(); apply(); }
+  function init(){
+    ensureCssLink();
+    ensureButtons();
+    apply();
+
+    // Делегирование клика: не потеряется при автообновлении DOM
+    if (!window.__wguiThemeBound) {
+      window.__wguiThemeBound = true;
+      document.addEventListener("click", function(ev){
+        const t = ev.target.closest("#wgui-theme-toggle, #wgui-theme-fab");
+        if (!t) return;
+        ev.preventDefault();
+        toggle();
+      }, true);
+    }
+
+    // На случай динамической перерисовки шапки (status auto-refresh)
+    setInterval(function(){
+      ensureButtons();
+      apply();
+    }, 2000);
+  }
+
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();
