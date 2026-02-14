@@ -1,9 +1,6 @@
-/* WGUI_THEME_CSS_V4 */
-
-/* гарантированная тёмная тема */
+/* WGUI_THEME_CSS_V5 */
 html.dark-mode, body.dark-mode { background:#0f1115 !important; color:#e6e6e6 !important; }
-body.dark-mode .content-wrapper { background:#0f1115 !important; }
-body.dark-mode .wrapper { background:#0f1115 !important; }
+body.dark-mode .content-wrapper, body.dark-mode .wrapper { background:#0f1115 !important; }
 
 body.dark-mode .main-sidebar { background:#141822 !important; }
 body.dark-mode .brand-link { background:#141822 !important; color:#e6e6e6 !important; }
@@ -26,10 +23,6 @@ body.dark-mode textarea {
   background:#0f1115 !important; color:#e6e6e6 !important;
   border:1px solid rgba(255,255,255,.14) !important;
 }
-body.dark-mode .form-control:focus {
-  border-color: rgba(255,255,255,.25) !important;
-  box-shadow: 0 0 0 .2rem rgba(255,255,255,.06) !important;
-}
 
 body.dark-mode .dropdown-menu { background:#151a24 !important; color:#e6e6e6 !important; border:1px solid rgba(255,255,255,.10) !important; }
 body.dark-mode .dropdown-item { color:#e6e6e6 !important; }
@@ -38,7 +31,7 @@ body.dark-mode .dropdown-item:hover { background:rgba(255,255,255,.05) !importan
 body.dark-mode .modal-content { background:#151a24 !important; color:#e6e6e6 !important; }
 body.dark-mode a { color:#9ecbff !important; }
 
-/* кнопка fallback снизу */
+/* fallback кнопка */
 #wgui-theme-fab{
   position:fixed; right:14px; bottom:14px; z-index:1060;
   border:0; border-radius:999px; padding:10px 12px;

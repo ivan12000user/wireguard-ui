@@ -136,7 +136,7 @@ function prettyDateTime(timeStr) {
     return dateLocal.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " ");
 }
 
-// WGUI_THEME_TOGGLE_V4
+// WGUI_THEME_TOGGLE_V5
 (function () {
   const KEY = "wgui_theme"; // dark|light
 
@@ -145,17 +145,8 @@ function prettyDateTime(timeStr) {
   function setMode(m){ try { localStorage.setItem(KEY, m); } catch(e) {} apply(); }
   function toggle(){ setMode(isDark() ? "light" : "dark"); }
 
-  function ensureCssLink(){
-    if (document.getElementById("wgui-theme-css")) return;
-    const link = document.createElement("link");
-    link.id = "wgui-theme-css";
-    link.rel = "stylesheet";
-    link.href = "/static/custom/css/wgui-theme.css";
-    document.head.appendChild(link);
-  }
-
   function ensureButtons(){
-    // navbar
+    // navbar справа
     const nav = document.querySelector(".main-header.navbar");
     if (nav && !document.getElementById("wgui-theme-toggle")) {
       const slot = nav.querySelector(".navbar-nav.ml-auto") || nav.querySelector(".navbar-nav");
@@ -170,7 +161,8 @@ function prettyDateTime(timeStr) {
         else slot.appendChild(li);
       }
     }
-    // fallback floating
+
+    // fallback: плавающая кнопка
     if (!document.getElementById("wgui-theme-toggle") && !document.getElementById("wgui-theme-fab")) {
       const b = document.createElement("button");
       b.id = "wgui-theme-fab";
@@ -182,7 +174,6 @@ function prettyDateTime(timeStr) {
   }
 
   function apply(){
-    ensureCssLink();
     const dark = isDark();
     document.documentElement.classList.toggle("dark-mode", dark);
     document.body.classList.toggle("dark-mode", dark);
@@ -194,13 +185,12 @@ function prettyDateTime(timeStr) {
   }
 
   function init(){
-    ensureCssLink();
     ensureButtons();
     apply();
 
-    // Делегирование клика: не потеряется при автообновлении DOM
-    if (!window.__wguiThemeBound) {
-      window.__wguiThemeBound = true;
+    // делегированный обработчик: не потеряется при перерисовке шапки/status
+    if (!window.__wguiThemeV5Bound) {
+      window.__wguiThemeV5Bound = true;
       document.addEventListener("click", function(ev){
         const t = ev.target.closest("#wgui-theme-toggle, #wgui-theme-fab");
         if (!t) return;
@@ -209,7 +199,7 @@ function prettyDateTime(timeStr) {
       }, true);
     }
 
-    // На случай динамической перерисовки шапки (status auto-refresh)
+    // если DOM перерисовывается — периодически убеждаемся, что кнопка на месте
     setInterval(function(){
       ensureButtons();
       apply();
