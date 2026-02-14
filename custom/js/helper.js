@@ -136,17 +136,65 @@ function prettyDateTime(timeStr) {
     return dateLocal.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " ");
 }
 
-// WGUI_THEME_TOGGLE_V5
+// WGUI_THEME_TOGGLE_V6
 (function () {
   const KEY = "wgui_theme"; // dark|light
+  const COOKIE = "wgui_theme";
 
-  function getMode(){ try { return localStorage.getItem(KEY) || "light"; } catch(e){ return "light"; } }
+  function getCookie(name) {
+    const m = document.cookie.match(new RegExp("(^|;\\s*)" + name + "=([^;]*)"));
+    return m ? decodeURIComponent(m[2]) : "";
+  }
+  function setCookie(name, value, days) {
+    const maxAge = days ? ("; Max-Age=" + (days*24*60*60)) : "";
+    document.cookie = name + "=" + encodeURIComponent(value) + "; Path=/" + maxAge;
+  }
+
+  function getMode(){
+    const c = getCookie(COOKIE);
+    if (c === "dark" || c === "light") return c;
+
+    try {
+      const ls = localStorage.getItem(KEY);
+      if (ls === "dark" || ls === "light") return ls;
+    } catch(e) {}
+
+    // если где-то уже включили класс — держим его
+    if (document.documentElement.classList.contains("dark-mode") || document.body.classList.contains("dark-mode")) return "dark";
+    return "light";
+  }
   function isDark(){ return getMode() === "dark"; }
-  function setMode(m){ try { localStorage.setItem(KEY, m); } catch(e) {} apply(); }
-  function toggle(){ setMode(isDark() ? "light" : "dark"); }
+
+  function persist(mode){
+    // cookie — основной источник истины (на 365 дней)
+    setCookie(COOKIE, mode, 365);
+    // localStorage — вторично
+    try { localStorage.setItem(KEY, mode); } catch(e) {}
+  }
+
+  function setMode(mode){
+    persist(mode);
+    apply(mode);
+  }
+
+  function toggle(){
+    setMode(isDark() ? "light" : "dark");
+  }
+
+  function apply(mode){
+    const dark = (mode === "dark");
+    document.documentElement.classList.toggle("dark-mode", dark);
+    document.body.classList.toggle("dark-mode", dark);
+
+    // иконки
+    const e1 = document.getElementById("wgui-theme-emoji");
+    if (e1) e1.textContent = dark ? "☀️" : "🌙";
+    const e2 = document.getElementById("wgui-theme-fab-emoji");
+    if (e2) e2.textContent = dark ? "☀️" : "🌙";
+  }
 
   function ensureButtons(){
-    // navbar справа
+    // navbar справа (если есть)
     const nav = document.querySelector(".main-header.navbar");
     if (nav && !document.getElementById("wgui-theme-toggle")) {
       const slot = nav.querySelector(".navbar-nav.ml-auto") || nav.querySelector(".navbar-nav");
@@ -162,8 +210,8 @@ function prettyDateTime(timeStr) {
       }
     }
 
-    // fallback: плавающая кнопка
-    if (!document.getElementById("wgui-theme-toggle") && !document.getElementById("wgui-theme-fab")) {
+    // Плавающая кнопка — ДЛЯ МОБИЛЫ (и вообще как fallback)
+    if (!document.getElementById("wgui-theme-fab")) {
       const b = document.createElement("button");
       b.id = "wgui-theme-fab";
       b.type = "button";
@@ -173,24 +221,13 @@ function prettyDateTime(timeStr) {
     }
   }
 
-  function apply(){
-    const dark = isDark();
-    document.documentElement.classList.toggle("dark-mode", dark);
-    document.body.classList.toggle("dark-mode", dark);
-
-    const e1 = document.getElementById("wgui-theme-emoji");
-    if (e1) e1.textContent = dark ? "☀️" : "🌙";
-    const e2 = document.getElementById("wgui-theme-fab-emoji");
-    if (e2) e2.textContent = dark ? "☀️" : "🌙";
-  }
-
   function init(){
     ensureButtons();
-    apply();
+    apply(getMode());
 
-    // делегированный обработчик: не потеряется при перерисовке шапки/status
-    if (!window.__wguiThemeV5Bound) {
-      window.__wguiThemeV5Bound = true;
+    // делегированный клик (не теряется при перерисовке)
+    if (!window.__wguiThemeV6Bound) {
+      window.__wguiThemeV6Bound = true;
       document.addEventListener("click", function(ev){
         const t = ev.target.closest("#wgui-theme-toggle, #wgui-theme-fab");
         if (!t) return;
@@ -199,10 +236,9 @@ function prettyDateTime(timeStr) {
       }, true);
     }
 
-    // если DOM перерисовывается — периодически убеждаемся, что кнопка на месте
+    // только восстанавливаем кнопки (без apply по таймеру)
     setInterval(function(){
       ensureButtons();
-      apply();
     }, 2000);
   }
 
