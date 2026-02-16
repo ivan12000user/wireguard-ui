@@ -2,7 +2,30 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
+    
+  <!-- WGUI_THEME_BOOTSTRAP_V1 -->
+  <script>
+  (function () {
+    try {
+      var t = localStorage.getItem("wgui_theme") || "light"; // "dark"|"light"
+      var isDark = (t === "dark");
+      var el = document.documentElement;
+      // важно: ставим класс на <html> ДО загрузки css/отрисовки
+      if (isDark) el.classList.add("dark-mode");
+      else el.classList.remove("dark-mode");
+      el.setAttribute("data-theme", isDark ? "dark" : "light");
+      // body еще может не существовать; добьем позже быстро
+      document.addEventListener("DOMContentLoaded", function(){
+        if (document.body) {
+          if (isDark) document.body.classList.add("dark-mode");
+          else document.body.classList.remove("dark-mode");
+        }
+      }, { once:true });
+    } catch (e) {}
+  })();
+  </script>
+
+<meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>WireGuard UI</title>
     <!-- Tell the browser to be responsive to screen width -->
