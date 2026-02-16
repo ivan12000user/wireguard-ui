@@ -246,3 +246,74 @@ function prettyDateTime(timeStr) {
   else init();
 })();
 
+
+
+// WGUI_THEME_HELPER_V2
+(function(){
+  const KEY = "wgui_theme";
+
+  function setCookie(name, value){
+    try{ document.cookie = name + "=" + encodeURIComponent(value) + "; Path=/; Max-Age=31536000; SameSite=Lax"; }catch(e){}
+  }
+
+  function applyTheme(t){
+    const isDark = (t === "dark");
+    const html = document.documentElement;
+    html.classList.toggle("dark-mode", isDark);
+    html.setAttribute("data-theme", isDark ? "dark" : "light");
+    if (document.body){
+      document.body.classList.toggle("dark-mode", isDark);
+      document.body.setAttribute("data-theme", isDark ? "dark" : "light");
+    }
+    // icon
+    const ico = document.getElementById("wgui-theme-ico");
+    if (ico) ico.textContent = isDark ? "🌙" : "☀️";
+    // floating ico if any
+    const fabIco = document.querySelector("#wgui-theme-fab .wgui-theme-fab-ico");
+    if (fabIco) fabIco.textContent = isDark ? "🌙" : "☀️";
+  }
+
+  function getTheme(){
+    try { return localStorage.getItem(KEY) || ""; } catch(e){ return ""; }
+  }
+
+  function setTheme(t){
+    try { localStorage.setItem(KEY, t); } catch(e){}
+    setCookie(KEY, t);
+    applyTheme(t);
+  }
+
+  function toggleTheme(){
+    const cur = getTheme() || (document.documentElement.classList.contains("dark-mode") ? "dark" : "light");
+    setTheme(cur === "dark" ? "light" : "dark");
+  }
+
+  // optional: create floating button if you ever want it (e.g. some pages without navbar)
+  function ensureFab(){
+    if (document.getElementById("wgui-theme-fab")) return;
+    // only if navbar button missing
+    if (document.getElementById("wgui-theme-toggle")) return;
+
+    const b = document.createElement("button");
+    b.id = "wgui-theme-fab";
+    b.type = "button";
+    b.className = "wgui-theme-fab";
+    b.innerHTML = '<span class="wgui-theme-fab-ico" aria-hidden="true">🌙</span>';
+    b.title = "Тема";
+    b.addEventListener("click", function(ev){ ev.preventDefault(); toggleTheme(); });
+    document.body.appendChild(b);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    // bind navbar button
+    const btn = document.getElementById("wgui-theme-toggle");
+    if (btn && !btn.dataset.bound){
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", function(ev){ ev.preventDefault(); toggleTheme(); });
+    }
+    ensureFab();
+    // sync icon with current state
+    const cur = getTheme() || (document.documentElement.classList.contains("dark-mode") ? "dark" : "light");
+    applyTheme(cur === "dark" ? "dark" : "light");
+  });
+})();

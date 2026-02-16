@@ -3,7 +3,62 @@
 
 <head>
     
-  <!-- WGUI_THEME_BOOTSTRAP_V1 -->
+  
+    <!-- WGUI_THEME_BOOTSTRAP_V2 (anti-FOUC, early) -->
+    <meta name="color-scheme" content="dark light">
+    <style id="wgui-early-theme-style">
+      /* default = dark to prevent white flash (dark users) */
+      html, body { background:#0f1115 !important; }
+    </style>
+    <script>
+    (function () {
+      function getCookie(name){
+        try{
+          var m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\\[\\]\\\\\\/\\+^])/g,'\\$1') + '=([^;]*)'));
+          return m ? decodeURIComponent(m[1]) : "";
+        }catch(e){ return ""; }
+      }
+      function setCookie(name, value){
+        try{
+          document.cookie = name + "=" + encodeURIComponent(value) + "; Path=/; Max-Age=31536000; SameSite=Lax";
+        }catch(e){}
+      }
+      function pickDefault(){
+        // if user never chose: follow OS preference
+        try{
+          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return "dark";
+        }catch(e){}
+        return "light";
+      }
+
+      var KEY = "wgui_theme";
+      var t = "";
+      try { t = localStorage.getItem(KEY) || ""; } catch(e) {}
+      if (!t) t = getCookie(KEY) || "";
+      if (!t) t = pickDefault();
+
+      var isDark = (t === "dark");
+      var html = document.documentElement;
+      html.classList.toggle("dark-mode", isDark);
+      html.setAttribute("data-theme", isDark ? "dark" : "light");
+
+      // prevent white flash: if user wants LIGHT, switch early background to light
+      var st = document.getElementById("wgui-early-theme-style");
+      if (st && !isDark) st.textContent = "html, body { background:#f4f6f9 !important; }";
+
+      // body may not exist yet; set again on DOM ready
+      document.addEventListener("DOMContentLoaded", function(){
+        if (document.body){
+          document.body.classList.toggle("dark-mode", isDark);
+          document.body.setAttribute("data-theme", isDark ? "dark" : "light");
+        }
+      }, { once:true });
+
+      // persist (cookie for faster reads; localStorage already used)
+      setCookie(KEY, t);
+    })();
+    </script>
+<!-- WGUI_THEME_BOOTSTRAP_V1 -->
   <script>
   (function () {
     try {

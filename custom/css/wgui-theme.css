@@ -356,3 +356,27 @@ body.dark-mode .tag-editor input::placeholder {
   color: rgba(255,255,255,.45) !important;
 }
 
+
+
+/* WGUI_THEME_UI_V2 */
+.wgui-theme-toggle { min-width: 40px; }
+.wgui-theme-toggle:focus { outline: none; box-shadow: none; }
+
+.wgui-theme-fab{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 99999;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(20,24,32,.92);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+.wgui-theme-fab:hover{ filter: brightness(1.1); }
