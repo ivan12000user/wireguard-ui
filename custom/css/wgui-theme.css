@@ -232,3 +232,127 @@ body.dark-mode .table-hover tbody tr:hover a,
 body.dark-mode .table tbody tr:hover a {
   color: #9ecbff !important;
 }
+
+/* WGUI_DARK_OTHER_PAGES_FIX_V1
+   Fix white blocks in Clients/Server/Global/Users pages:
+   - bg-white/bg-light containers
+   - tags input (chips + Add More)
+   - list-group, input-group-text, disabled inputs
+*/
+
+/* kill white/light backgrounds */
+body.dark-mode .bg-white,
+body.dark-mode .bg-light,
+body.dark-mode .bg-gray-light,
+body.dark-mode .bg-gray,
+body.dark-mode .bg-gray-light,
+body.dark-mode .bg-gray-lt,
+body.dark-mode .bg-faded {
+  background: #121724 !important;
+  color: #e7eaf0 !important;
+}
+
+/* cards/boxes (на случай если где-то не .card, а .box / .card-widget) */
+body.dark-mode .card,
+body.dark-mode .card-body,
+body.dark-mode .card-header,
+body.dark-mode .card-footer,
+body.dark-mode .box,
+body.dark-mode .box-body,
+body.dark-mode .box-header,
+body.dark-mode .info-box,
+body.dark-mode .small-box,
+body.dark-mode .small-box > .inner {
+  background: #121724 !important;
+  color: #e7eaf0 !important;
+  border-color: rgba(255,255,255,.06) !important;
+}
+
+body.dark-mode .card-header,
+body.dark-mode .box-header {
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+body.dark-mode .card-footer,
+body.dark-mode .box-footer {
+  border-top: 1px solid rgba(255,255,255,.08) !important;
+}
+
+/* list-group */
+body.dark-mode .list-group-item {
+  background: #121724 !important;
+  color: #e7eaf0 !important;
+  border-color: rgba(255,255,255,.08) !important;
+}
+
+/* input-group addons */
+body.dark-mode .input-group-text {
+  background: #0f1115 !important;
+  color: rgba(255,255,255,.88) !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
+
+/* disabled inputs often look "washed out" on dark */
+body.dark-mode .form-control:disabled,
+body.dark-mode .custom-select:disabled,
+body.dark-mode input:disabled,
+body.dark-mode select:disabled,
+body.dark-mode textarea:disabled {
+  background: rgba(255,255,255,.04) !important;
+  color: rgba(255,255,255,.78) !important;
+  opacity: 1 !important;
+}
+
+/* HR */
+body.dark-mode hr {
+  border-color: rgba(255,255,255,.10) !important;
+}
+
+/* ===== tags input (white area with chips + "Add More") ===== */
+/* most common plugin classes */
+body.dark-mode .bootstrap-tagsinput,
+body.dark-mode .tagsinput,
+body.dark-mode .tag-editor,
+body.dark-mode .tag-editor-ui {
+  background: #0f1115 !important;
+  color: #e7eaf0 !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow: none !important;
+}
+
+/* chips/tags */
+body.dark-mode .bootstrap-tagsinput .tag,
+body.dark-mode .tagsinput .tag,
+body.dark-mode .tag-editor .tag-editor-tag {
+  background: rgba(30, 58, 138, .28) !important; /* dark blue */
+  border: 1px solid rgba(59,130,246,.35) !important;
+  color: rgba(255,255,255,.94) !important;
+}
+
+/* the "x" remove button in chips */
+body.dark-mode .bootstrap-tagsinput .tag [data-role="remove"],
+body.dark-mode .tagsinput .tag a,
+body.dark-mode .tag-editor .tag-editor-delete {
+  color: rgba(255,255,255,.85) !important;
+  opacity: .85 !important;
+}
+body.dark-mode .bootstrap-tagsinput .tag [data-role="remove"]:hover,
+body.dark-mode .tagsinput .tag a:hover,
+body.dark-mode .tag-editor .tag-editor-delete:hover {
+  opacity: 1 !important;
+}
+
+/* the input inside tags area ("Add More") */
+body.dark-mode .bootstrap-tagsinput input,
+body.dark-mode .tagsinput input,
+body.dark-mode .tag-editor input {
+  background: transparent !important;
+  color: rgba(255,255,255,.92) !important;
+}
+
+/* placeholder */
+body.dark-mode .bootstrap-tagsinput input::placeholder,
+body.dark-mode .tagsinput input::placeholder,
+body.dark-mode .tag-editor input::placeholder {
+  color: rgba(255,255,255,.45) !important;
+}
+
