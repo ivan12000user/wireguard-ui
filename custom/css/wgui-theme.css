@@ -214,3 +214,21 @@ body.dark-mode table.table-success tbody tr .text-muted {
   color: rgba(255,255,255,.72) !important;
 }
 
+
+/* WGUI_HOVER_TEXT_FIX_V1
+   Bootstrap/AdminLTE может ставить темный color на tr:hover (table-hover).
+   В dark-mode принудительно держим светлый текст. */
+body.dark-mode .table-hover tbody tr:hover,
+body.dark-mode .table-hover tbody tr:hover > td,
+body.dark-mode .table-hover tbody tr:hover > th,
+body.dark-mode .table tbody tr:hover,
+body.dark-mode .table tbody tr:hover > td,
+body.dark-mode .table tbody tr:hover > th {
+  color: rgba(255,255,255,.94) !important;
+}
+
+/* ссылки внутри строки */
+body.dark-mode .table-hover tbody tr:hover a,
+body.dark-mode .table tbody tr:hover a {
+  color: #9ecbff !important;
+}
