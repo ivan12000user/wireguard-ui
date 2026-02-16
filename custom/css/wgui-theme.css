@@ -1,42 +1,140 @@
-/* WGUI_THEME_CSS_V5 */
-html.dark-mode, body.dark-mode { background:#0f1115 !important; color:#e6e6e6 !important; }
-body.dark-mode .content-wrapper, body.dark-mode .wrapper { background:#0f1115 !important; }
+/* WGUI_THEME_CSS_V6 (tuned) */
 
-body.dark-mode .main-sidebar { background:#141822 !important; }
-body.dark-mode .brand-link { background:#141822 !important; color:#e6e6e6 !important; }
+/* Base surfaces */
+html.dark-mode, body.dark-mode {
+  background: #0f1115 !important;
+  color: #e7eaf0 !important;
+}
+body.dark-mode .wrapper,
+body.dark-mode .content-wrapper {
+  background: #0f1115 !important;
+}
 
-body.dark-mode .card { background:#151a24 !important; color:#e6e6e6 !important; }
-body.dark-mode .card-header { background:#151a24 !important; border-bottom:1px solid rgba(255,255,255,.08) !important; }
-body.dark-mode .card-footer { background:#151a24 !important; border-top:1px solid rgba(255,255,255,.08) !important; }
+/* Top navbar */
+body.dark-mode .main-header.navbar {
+  background: #121724 !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+body.dark-mode .main-header .nav-link { color: rgba(255,255,255,.88) !important; }
+body.dark-mode .main-header .nav-link:hover { color: #ffffff !important; }
 
-body.dark-mode .table { color:#e6e6e6 !important; }
-body.dark-mode .table td, body.dark-mode .table th { border-top:1px solid rgba(255,255,255,.08) !important; }
-body.dark-mode .table thead th { border-bottom:1px solid rgba(255,255,255,.12) !important; }
-body.dark-mode .table-hover tbody tr:hover { background:rgba(255,255,255,.04) !important; }
-body.dark-mode .table-striped tbody tr:nth-of-type(odd) { background:rgba(255,255,255,.02) !important; }
+/* Sidebar */
+body.dark-mode .main-sidebar {
+  background: #0e131c !important;
+}
+body.dark-mode .brand-link {
+  background: #0e131c !important;
+  color: rgba(255,255,255,.90) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+body.dark-mode .nav-sidebar .nav-link {
+  color: rgba(255,255,255,.82) !important;
+}
+body.dark-mode .nav-sidebar .nav-link:hover {
+  background: rgba(255,255,255,.05) !important;
+  color: #fff !important;
+}
+body.dark-mode .nav-sidebar .nav-link.active {
+  background: rgba(0,123,255,.22) !important;
+  color: #fff !important;
+}
 
+/* Cards / panels */
+body.dark-mode .card {
+  background: #121724 !important;
+  color: #e7eaf0 !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+}
+body.dark-mode .card-header {
+  background: #121724 !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+body.dark-mode .card-footer {
+  background: #121724 !important;
+  border-top: 1px solid rgba(255,255,255,.08) !important;
+}
+
+/* Forms */
 body.dark-mode .form-control,
 body.dark-mode .custom-select,
 body.dark-mode input,
 body.dark-mode select,
 body.dark-mode textarea {
-  background:#0f1115 !important; color:#e6e6e6 !important;
-  border:1px solid rgba(255,255,255,.14) !important;
+  background: #0f1115 !important;
+  color: #e7eaf0 !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+}
+body.dark-mode .form-control:focus,
+body.dark-mode .custom-select:focus {
+  border-color: rgba(255,255,255,.28) !important;
+  box-shadow: 0 0 0 .2rem rgba(255,255,255,.06) !important;
 }
 
-body.dark-mode .dropdown-menu { background:#151a24 !important; color:#e6e6e6 !important; border:1px solid rgba(255,255,255,.10) !important; }
-body.dark-mode .dropdown-item { color:#e6e6e6 !important; }
-body.dark-mode .dropdown-item:hover { background:rgba(255,255,255,.05) !important; }
+/* Text helpers */
+body.dark-mode .text-muted {
+  color: rgba(255,255,255,.68) !important; /* чтобы IP под именем читался */
+}
 
-body.dark-mode .modal-content { background:#151a24 !important; color:#e6e6e6 !important; }
-body.dark-mode a { color:#9ecbff !important; }
+/* Dropdown / modal */
+body.dark-mode .dropdown-menu {
+  background: #121724 !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+}
+body.dark-mode .dropdown-item { color: rgba(255,255,255,.88) !important; }
+body.dark-mode .dropdown-item:hover { background: rgba(255,255,255,.06) !important; }
+body.dark-mode .modal-content { background: #121724 !important; color: #e7eaf0 !important; }
 
-/* fallback кнопка */
+/* Table: FIX белой шапки + нормальный контраст */
+body.dark-mode .table {
+  color: #e7eaf0 !important;
+  background: #121724 !important;
+}
+body.dark-mode .table thead th {
+  background: #1a2232 !important;          /* тёмный thead */
+  color: #e7eaf0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.14) !important;
+}
+body.dark-mode .table td,
+body.dark-mode .table th {
+  border-top: 1px solid rgba(255,255,255,.08) !important;
+}
+
+/* Rows: более спокойная “зелень” */
+body.dark-mode .table tbody tr {
+  background: rgba(22, 101, 52, .16) !important;  /* мягкий зелёный */
+}
+body.dark-mode .table tbody tr:nth-of-type(odd) {
+  background: rgba(22, 101, 52, .12) !important;
+}
+body.dark-mode .table tbody tr:hover {
+  background: rgba(22, 101, 52, .24) !important;
+}
+
+/* Если вдруг есть “неактивные/ошибочные” классы — не красим их зелёным */
+body.dark-mode .table tbody tr.table-secondary,
+body.dark-mode .table tbody tr.table-danger,
+body.dark-mode .table tbody tr.table-warning,
+body.dark-mode .table tbody tr.bg-secondary,
+body.dark-mode .table tbody tr.bg-danger,
+body.dark-mode .table tbody tr.bg-warning {
+  background: rgba(255,255,255,.03) !important;
+}
+
+/* Links */
+body.dark-mode a { color: #9ecbff !important; }
+
+/* Theme button (mobile) */
 #wgui-theme-fab{
-  position:fixed; right:14px; bottom:14px; z-index:2000;
-  border:0; border-radius:999px; padding:10px 12px;
-  box-shadow:0 6px 18px rgba(0,0,0,.25);
-  cursor:pointer; background:rgba(120,120,120,.85); color:#fff;
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2000;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.25);
+  cursor: pointer;
+  background: rgba(40,40,40,.88);
+  color: #fff;
   backdrop-filter: blur(6px);
 }
-body.dark-mode #wgui-theme-fab{ background:rgba(40,40,40,.85) !important; }
