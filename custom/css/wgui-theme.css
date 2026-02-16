@@ -129,51 +129,36 @@ body.dark-mode a { color: #9ecbff !important; }
   backdrop-filter: blur(6px);
 }
 
+/* === Status table refine (ACTIVE = dark blue) === */
 
-/* === Status table refine (green only for connected rows) === */
+/* базовая тёмная таблица */
+body.dark-mode .table tbody tr { background: transparent !important; }
+body.dark-mode .table tbody tr:nth-of-type(odd) { background: rgba(255,255,255,.02) !important; }
+body.dark-mode .table tbody tr:hover { background: rgba(255,255,255,.05) !important; }
 
-/* базовая тёмная таблица (строки НЕ зелёные по умолчанию) */
-body.dark-mode .table tbody tr {
-  background: transparent !important;
-}
-body.dark-mode .table tbody tr:nth-of-type(odd) {
-  background: rgba(255,255,255,.02) !important;
-}
-body.dark-mode .table tbody tr:hover {
-  background: rgba(255,255,255,.05) !important;
-}
-
-/* connected rows — оставляем “зелёный акцент” только тем, у кого есть success/connected классы */
+/* ACTIVE rows (подстрой под реальные классы/атрибуты) */
 body.dark-mode .table tbody tr.table-success,
 body.dark-mode .table tbody tr.bg-success,
 body.dark-mode .table tbody tr.connected,
 body.dark-mode .table tbody tr.is-connected,
 body.dark-mode .table tbody tr[data-connected="true"] {
-  background: rgba(22, 101, 52, .18) !important;
+  background: rgba(30, 58, 138, .22) !important;   /* dark blue */
+  color: rgba(255,255,255,.94) !important;
 }
 body.dark-mode .table tbody tr.table-success:hover,
 body.dark-mode .table tbody tr.bg-success:hover,
 body.dark-mode .table tbody tr.connected:hover,
 body.dark-mode .table tbody tr.is-connected:hover,
 body.dark-mode .table tbody tr[data-connected="true"]:hover {
-  background: rgba(22, 101, 52, .26) !important;
+  background: rgba(30, 58, 138, .30) !important;
 }
 
-/* тонкая зелёная полоска слева для connected (очень читаемо) */
+/* синяя полоска слева (акцент) */
 body.dark-mode .table tbody tr.table-success td:first-child,
 body.dark-mode .table tbody tr.bg-success td:first-child,
 body.dark-mode .table tbody tr.connected td:first-child,
 body.dark-mode .table tbody tr.is-connected td:first-child,
 body.dark-mode .table tbody tr[data-connected="true"] td:first-child {
-  box-shadow: inset 4px 0 0 rgba(34, 197, 94, .85);
-}
-
-/* чтобы текст на зелёном не бледнел */
-body.dark-mode .table tbody tr.table-success,
-body.dark-mode .table tbody tr.bg-success,
-body.dark-mode .table tbody tr.connected,
-body.dark-mode .table tbody tr.is-connected,
-body.dark-mode .table tbody tr[data-connected="true"] {
-  color: rgba(255,255,255,.92) !important;
+  box-shadow: inset 4px 0 0 rgba(59, 130, 246, .95);
 }
 
