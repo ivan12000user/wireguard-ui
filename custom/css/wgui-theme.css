@@ -162,3 +162,55 @@ body.dark-mode .table tbody tr[data-connected="true"] td:first-child {
   box-shadow: inset 4px 0 0 rgba(59, 130, 246, .95);
 }
 
+/* WGUI_ACTIVE_BLUE_FORCE_V1 */
+
+/* В dark-mode переопределяем Bootstrap/AdminLTE "success" (обычно он зелёный) -> тёмно-синий.
+   Важно: success может висеть на table/tbody/tr/td, поэтому покрываем ВСЕ варианты. */
+
+body.dark-mode .table-success,
+body.dark-mode .table-success > td,
+body.dark-mode .table-success > th,
+body.dark-mode table.table-success tbody tr,
+body.dark-mode table.table-success tbody tr > td,
+body.dark-mode table.table-success tbody tr > th,
+body.dark-mode tbody.table-success tr,
+body.dark-mode tbody.table-success tr > td,
+body.dark-mode tbody.table-success tr > th,
+body.dark-mode tr.table-success,
+body.dark-mode tr.table-success > td,
+body.dark-mode tr.table-success > th {
+  background-color: rgba(30, 58, 138, .22) !important; /* dark blue */
+  color: rgba(255,255,255,.94) !important;
+}
+
+body.dark-mode tr.table-success:hover,
+body.dark-mode tbody.table-success tr:hover,
+body.dark-mode table.table-success tbody tr:hover {
+  background-color: rgba(30, 58, 138, .30) !important;
+}
+
+/* bg-success бывает на td/th (и иногда на tr) */
+body.dark-mode .bg-success,
+body.dark-mode td.bg-success,
+body.dark-mode th.bg-success,
+body.dark-mode tr.bg-success {
+  background-color: rgba(30, 58, 138, .22) !important;
+  color: rgba(255,255,255,.94) !important;
+}
+
+/* Акцентная синяя полоска слева (на уровне строки) */
+body.dark-mode tr.table-success,
+body.dark-mode tr.bg-success,
+body.dark-mode tbody.table-success tr,
+body.dark-mode table.table-success tbody tr {
+  box-shadow: inset 4px 0 0 rgba(59, 130, 246, .95) !important;
+}
+
+/* Чтобы "мелкий серый" текст внутри active строк не терялся */
+body.dark-mode tr.table-success .text-muted,
+body.dark-mode tr.bg-success .text-muted,
+body.dark-mode tbody.table-success tr .text-muted,
+body.dark-mode table.table-success tbody tr .text-muted {
+  color: rgba(255,255,255,.72) !important;
+}
+
