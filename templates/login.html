@@ -2,16 +2,65 @@
 <html>
 
 <head>
-    
-  
-    <!-- WGUI_THEME_BOOTSTRAP_V2 (anti-FOUC, early) -->
+
+
+    <!-- WGUI_THEME_BOOTSTRAP_V3 -->
     <meta name="color-scheme" content="dark light">
-    <style id="wgui-early-theme-style">
-      /* default = dark to prevent white flash (dark users) */
-      html, body { background:#0f1115 !important; }
+    <style id="wgui-early-dark">
+      /* Anti-flash: как только на <html> появляется .dark-mode — сразу делаем базовые контейнеры тёмными,
+         не дожидаясь wgui-theme.css / adminlte. */
+      html.dark-mode, html.dark-mode body { background:#0f1115 !important; color:#e7eaf0 !important; }
+
+      html.dark-mode .wrapper,
+      html.dark-mode .content-wrapper,
+      html.dark-mode .main-header,
+      html.dark-mode .main-sidebar,
+      html.dark-mode .navbar,
+      html.dark-mode .main-footer {
+        background:#0f1115 !important;
+        color:#e7eaf0 !important;
+      }
+
+      html.dark-mode .card,
+      html.dark-mode .card-body,
+      html.dark-mode .card-header,
+      html.dark-mode .card-footer,
+      html.dark-mode .box,
+      html.dark-mode .box-body,
+      html.dark-mode .box-header,
+      html.dark-mode .info-box,
+      html.dark-mode .small-box {
+        background:#121724 !important;
+        color:#e7eaf0 !important;
+        border-color: rgba(255,255,255,.08) !important;
+      }
+
+      html.dark-mode .table,
+      html.dark-mode .table td,
+      html.dark-mode .table th {
+        color: rgba(255,255,255,.92) !important;
+      }
+
+      html.dark-mode .form-control,
+      html.dark-mode input,
+      html.dark-mode select,
+      html.dark-mode textarea {
+        background:#0f1115 !important;
+        color: rgba(255,255,255,.92) !important;
+        border-color: rgba(255,255,255,.14) !important;
+      }
+
+      html.dark-mode .dropdown-menu {
+        background:#121724 !important;
+        color:#e7eaf0 !important;
+        border-color: rgba(255,255,255,.10) !important;
+      }
     </style>
+
     <script>
-    (function () {
+    (function(){
+      var KEY = "wgui_theme";
+
       function getCookie(name){
         try{
           var m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\\[\\]\\\\\\/\\+^])/g,'\\$1') + '=([^;]*)'));
@@ -24,62 +73,57 @@
         }catch(e){}
       }
       function pickDefault(){
-        // if user never chose: follow OS preference
         try{
           if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return "dark";
         }catch(e){}
         return "light";
       }
 
-      var KEY = "wgui_theme";
-      var t = "";
-      try { t = localStorage.getItem(KEY) || ""; } catch(e) {}
-      if (!t) t = getCookie(KEY) || "";
-      if (!t) t = pickDefault();
+      function readTheme(){
+        var t = "";
+        try { t = localStorage.getItem(KEY) || ""; } catch(e) {}
+        if (!t) t = getCookie(KEY) || "";
+        if (!t) t = pickDefault();
+        return (t === "dark") ? "dark" : "light";
+      }
 
-      var isDark = (t === "dark");
-      var html = document.documentElement;
-      html.classList.toggle("dark-mode", isDark);
-      html.setAttribute("data-theme", isDark ? "dark" : "light");
-
-      // prevent white flash: if user wants LIGHT, switch early background to light
-      var st = document.getElementById("wgui-early-theme-style");
-      if (st && !isDark) st.textContent = "html, body { background:#f4f6f9 !important; }";
-
-      // body may not exist yet; set again on DOM ready
-      document.addEventListener("DOMContentLoaded", function(){
+      function applyTheme(t){
+        var isDark = (t === "dark");
+        var html = document.documentElement;
+        html.classList.toggle("dark-mode", isDark);
+        html.setAttribute("data-theme", isDark ? "dark" : "light");
         if (document.body){
           document.body.classList.toggle("dark-mode", isDark);
           document.body.setAttribute("data-theme", isDark ? "dark" : "light");
         }
-      }, { once:true });
+        var ico = document.getElementById("wgui-theme-ico");
+        if (ico) ico.textContent = isDark ? "🌙" : "☀️";
+      }
 
-      // persist (cookie for faster reads; localStorage already used)
-      setCookie(KEY, t);
+      function setTheme(t){
+        t = (t === "dark") ? "dark" : "light";
+        try { localStorage.setItem(KEY, t); } catch(e) {}
+        setCookie(KEY, t);
+        applyTheme(t);
+      }
+
+      // expose globals (works even if helper.js missing/cached)
+      window.wguiSetTheme = setTheme;
+      window.wguiToggleTheme = function(){
+        var cur = readTheme();
+        setTheme(cur === "dark" ? "light" : "dark");
+      };
+
+      // apply as EARLY as possible
+      var t0 = readTheme();
+      applyTheme(t0);
+
+      // ensure body sync
+      document.addEventListener("DOMContentLoaded", function(){
+        applyTheme(readTheme());
+      }, { once:true });
     })();
     </script>
-<!-- WGUI_THEME_BOOTSTRAP_V1 -->
-  <script>
-  (function () {
-    try {
-      var t = localStorage.getItem("wgui_theme") || "light"; // "dark"|"light"
-      var isDark = (t === "dark");
-      var el = document.documentElement;
-      // важно: ставим класс на <html> ДО загрузки css/отрисовки
-      if (isDark) el.classList.add("dark-mode");
-      else el.classList.remove("dark-mode");
-      el.setAttribute("data-theme", isDark ? "dark" : "light");
-      // body еще может не существовать; добьем позже быстро
-      document.addEventListener("DOMContentLoaded", function(){
-        if (document.body) {
-          if (isDark) document.body.classList.add("dark-mode");
-          else document.body.classList.remove("dark-mode");
-        }
-      }, { once:true });
-    } catch (e) {}
-  })();
-  </script>
-
 <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>WireGuard UI</title>
