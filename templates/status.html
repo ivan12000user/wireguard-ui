@@ -54,6 +54,8 @@
                 <tr>
                   <th scope="col">Пир / IP</th>
                   <th scope="col" class="d-none d-sm-table-cell">Endpoint</th>
+                  <!-- WGUI_GEOIP_COLUMNS_V1 -->
+                  <th scope="col" class="d-none d-lg-table-cell">Провайдер / место</th>
                   <th scope="col" class="d-none d-md-table-cell text-right">RX</th>
                   <th scope="col" class="d-none d-md-table-cell text-right">TX</th>
                   <th scope="col">Последний handshake</th>
@@ -72,6 +74,10 @@
                   </td>
 
                   <td class="d-none d-sm-table-cell wgui-mono wgui-wrap">{{ $peer.Endpoint }}</td>
+                  <td class="d-none d-lg-table-cell wgui-wrap">
+                    <div>—</div>
+                    <div class="text-muted small">—</div>
+                  </td>
 
                   <td class="d-none d-md-table-cell text-right bytes" data-bytes="{{ $peer.ReceivedBytes }}" title="{{ $peer.ReceivedBytes }} Bytes">{{ $peer.ReceivedBytes }}</td>
                   <td class="d-none d-md-table-cell text-right bytes" data-bytes="{{ $peer.TransmitBytes }}" title="{{ $peer.TransmitBytes }} Bytes">{{ $peer.TransmitBytes }}</td>
@@ -156,14 +162,22 @@
         const trClass = p.connected ? ' class="table-success"' : "";
         const allocatedHtml = (p.allocated_ips || []).map(escapeHtml).join("<br>");
         const endpoint = escapeHtml(p.endpoint || "");
+        const provider = escapeHtml(p.provider || "");
+        const location = escapeHtml(p.location || "");
+        const geoMobile = [provider, location].filter(Boolean).join(" / ");
         rows.push(
           `<tr${trClass}>` +
             `<td>` +
               `<div><b>${escapeHtml(p.name || "")}</b></div>` +
               `<div class="text-muted small wgui-mono wgui-wrap">${allocatedHtml}</div>` +
               `<div class="d-block d-sm-none text-muted small wgui-mono wgui-wrap">${endpoint ? "Endpoint: " + endpoint : ""}</div>` +
+              `<div class="d-block d-lg-none text-muted small wgui-wrap">${geoMobile ? "Провайдер / место: " + geoMobile : ""}</div>` +
             `</td>` +
             `<td class="d-none d-sm-table-cell wgui-mono wgui-wrap">${endpoint}</td>` +
+            `<td class="d-none d-lg-table-cell wgui-wrap">` +
+              `<div>${provider || "—"}</div>` +
+              `<div class="text-muted small">${location || "—"}</div>` +
+            `</td>` +
             `<td class="d-none d-md-table-cell text-right" title="${p.received_bytes} Bytes">${bytesToHumanReadable(p.received_bytes)}</td>` +
             `<td class="d-none d-md-table-cell text-right" title="${p.transmit_bytes} Bytes">${bytesToHumanReadable(p.transmit_bytes)}</td>` +
             `<td title="${escapeHtml(p.last_handshake || "")}">${relTimeRuFromUnix(p.last_handshake_unix)}</td>` +
